@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donor Dashboard - Blood Bond</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <span class="blood-drop">🩸</span>
+                <h1>Blood Bond</h1>
+            </div>
+            <p class="tagline">Donor Dashboard</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="register">Register as Donor</button>
+            <button class="tab-btn" data-tab="profile">My Profile</button>
+            <a href="index.html" class="btn-link">🚨 Emergency Search</a>
+        </nav>
+
+        <main>
+            <!-- Registration Tab -->
+            <section id="register-tab" class="tab-content active">
+                <div class="card">
+                    <h2>👤 Donor Registration</h2>
+                    <p class="info-text">Join our network of life-savers. Register to help save lives in emergencies.</p>
+                    
+                    <form id="donor-registration-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donor-name">Full Name *</label>
+                                <input type="text" id="donor-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="donor-blood-type">Blood Type *</label>
+                                <select id="donor-blood-type" required>
+                                    <option value="">Select</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donor-phone">Phone Number *</label>
+                                <input type="tel" id="donor-phone" placeholder="+1234567890" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="donor-email">Email Address *</label>
+                                <input type="email" id="donor-email" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="donor-address">Full Address *</label>
+                            <input type="text" id="donor-address" placeholder="Street, City, State, ZIP" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donor-age">Age *</label>
+                                <input type="number" id="donor-age" min="18" max="65" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="donor-weight">Weight (kg) *</label>
+                                <input type="number" id="donor-weight" min="50" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="last-donation-date">Last Donation Date</label>
+                            <input type="date" id="last-donation-date">
+                            <small class="form-hint">Leave empty if you've never donated before</small>
+                        </div>
+
+                        <div class="form-group" id="last-donation-location-group" style="display: none;">
+                            <label for="last-donation-location">Last Donation Location</label>
+                            <input type="text" id="last-donation-location" placeholder="Hospital/Blood Bank Name">
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="medical-conditions" required>
+                                I confirm I have no medical conditions that prevent blood donation
+                            </label>
+                        </div>
+
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="emergency-consent" required>
+                                I consent to be contacted in emergency situations
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Register as Donor</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Profile Tab -->
+            <section id="profile-tab" class="tab-content">
+                <div id="no-profile" class="card">
+                    <h2>📋 My Profile</h2>
+                    <p class="info-text">No profile found. Please register first.</p>
+                </div>
+
+                <div id="profile-view" class="hidden">
+                    <div class="card profile-header">
+                        <div class="profile-info">
+                            <div class="profile-avatar">
+                                <span id="profile-initial">A</span>
+                            </div>
+                            <div>
+                                <h2 id="profile-name">John Doe</h2>
+                                <span class="blood-type-badge" id="profile-blood-type">O+</span>
+                                <div id="eligibility-status" class="eligibility-badge"></div>
+                            </div>
+                        </div>
+                        <button id="edit-profile-btn" class="btn btn-secondary">Edit Profile</button>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <h3>📞 Contact Information</h3>
+                            <div class="info-item">
+                                <span class="info-label">Phone:</span>
+                                <span id="profile-phone">+1234567890</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email:</span>
+                                <span id="profile-email">john@example.com</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Address:</span>
+                                <span id="profile-address">123 Main St, City</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>🩺 Medical Information</h3>
+                            <div class="info-item">
+                                <span class="info-label">Age:</span>
+                                <span id="profile-age">30</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Weight:</span>
+                                <span id="profile-weight">70 kg</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Blood Type:</span>
+                                <span id="profile-blood-type-detail">O+</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📅 Donation History</h3>
+                        <div id="donation-history">
+                            <p class="info-text">No donation records yet.</p>
+                        </div>
+                        
+                        <!-- Inline Add Donation Form -->
+                        <div id="add-donation-section" style="margin-top: 20px; padding: 20px; background: var(--bg-light); border-radius: 10px;">
+                            <h4 style="color: var(--hospital-blue); margin-bottom: 15px;">Add New Donation</h4>
+                            <form id="add-donation-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="donation-date">Donation Date *</label>
+                                        <input type="date" id="donation-date" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="donation-units">Units Donated</label>
+                                        <input type="number" id="donation-units" value="1" min="1" max="2">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="donation-location">Donation Location *</label>
+                                    <input type="text" id="donation-location" placeholder="Hospital/Blood Bank Name" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Donation</button>
+                            </form>
+                        </div>
+                        
+                        <div id="emergency-access-status" style="margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; font-weight: 600;"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>📊 Donation Statistics</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="total-donations">0</div>
+                                <div class="stat-label">Total Donations</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="lives-saved">0</div>
+                                <div class="stat-label">Lives Potentially Saved</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="next-eligible">--</div>
+                                <div class="stat-label">Days Until Eligible</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Save Life</h3>
+                    <ul>
+                        <li><a href="index.html">Request Blood</a></li>
+                        <li><a href="#donate">Donate Blood</a></li>
+                        <li><a href="#find-bank">Find Blood Bank</a></li>
+                        <li><a href="#find-hospital">Find Hospital</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Register</h3>
+                    <ul>
+                        <li><a href="#register">Donor Signup</a></li>
+                        <li><a href="#bank">Blood Bank Sign Up</a></li>
+                        <li><a href="#hospital">Hospital Sign Up</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#privacy">Privacy Policy</a></li>
+                        <li><a href="#terms">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section footer-brand">
+                    <h2>BLOOD BOND</h2>
+                    <p>Blood Bond is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://twitter.com/RedCross" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://www.instagram.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/american-red-cross" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>⚠️ For life-threatening emergencies, call 911 immediately</p>
+                <p>&copy; 2024 Blood Bond. All rights reserved. Saving lives together.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
