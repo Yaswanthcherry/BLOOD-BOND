@@ -91,7 +91,13 @@ function handleRegistration(e) {
     // Save to available donors list for emergency search
     saveToAvailableDonors();
 
-    alert('Registration successful! Welcome to Blood Agent. Your profile is now available for emergency searches.');
+    // Register with backend API
+    registerDonorWithBackend(donorData);
+
+    alert('Registration successful! Welcome to Blood Bond. Your profile is now available for emergency searches.');
+    
+    // Request notification permission
+    requestNotificationPermission(donorData.email);
     
     // Reset form
     document.getElementById('donor-registration-form').reset();
@@ -350,4 +356,65 @@ function editProfile() {
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
+// Register donor with backend API
+async function registerDonorWithBackend(donorData) {
+    try {
+        const response = await fetch('http://localhost:3000/api/donors', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(donorData)
+        });
+
+        const result = await response.json();
+        
+        if (response.ok) {
+            console.log('✅ Donor registered with backend:', result);
+            // Store donor ID for future updates
+            if (result.id) {
+                const profile = JSON.parse(localStorage.getItem('donorProfile'));
+                profile.id = result.id;
+                localStorage.setItem('donorProfile', JSON.stringify(profile));
+            }
+        } else {
+            console.error('❌ Backend registration failed:', result);
+        }
+    } catch (error) {
+        console.error('❌ Error registering with backend:', error);
+    }
+}
+
+// Request notification permission and get FCM token
+async function requestNotificationPermission(email) {
+    // Check if FCM is initialized
+    if (!window.BloodBondFCM) {
+        console.log('⚠️  Firebase not initialized');
+        return;
+    }
+
+    // Ask user for permission
+    const enableNotifications = confirm(
+        '🔔 Enable push notifications?\n\n' +
+        'Get instant alerts when there\'s an emergency blood request matching your blood type.\n\n' +
+        'Click OK to enable notifications.'
+    );
+
+    if (enableNotifications) {
+        try {
+            const token = await window.BloodBondFCM.requestPermission();
+            
+            if (token) {
+                console.log('✅ Push notifications enabled!');
+                alert('✅ Push notifications enabled! You\'ll receive alerts for emergency requests.');
+            } else {
+                console.log('⚠️  Notification permission denied');
+            }
+        } catch (error) {
+            console.error('Error requesting notification permission:', error);
+        }
+    }
 }

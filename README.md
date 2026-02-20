@@ -1,4 +1,4 @@
-# Blood Agent - Emergency Blood Donor Finder
+# Blood Bond - Emergency Blood Donor Finder
 
 A web application for finding nearby blood donors and blood banks in emergency situations.
 
@@ -12,6 +12,7 @@ A web application for finding nearby blood donors and blood banks in emergency s
 - 📞 Direct contact information for donors
 - 🏥 Blood bank availability status
 - 📱 Responsive, hospital-themed UI
+- 🔔 **Automated SMS & Email alerts to matched donors**
 
 ### Donor Dashboard (dashboard.html)
 - 👤 Donor registration with complete profile
@@ -21,13 +22,35 @@ A web application for finding nearby blood donors and blood banks in emergency s
 - ✏️ Edit profile and update information
 - 💉 Add new donation records
 - 🔔 Eligibility status display
+- ✉️ **Email confirmation on registration**
+- 📲 **Push notification support**
+
+### Notification System
+- 📱 **Twilio SMS** - Emergency alerts to nearby donors
+- ✉️ **Nodemailer + Gmail** - Registration confirmations and match notifications
+- 🔔 **Firebase FCM** - Browser push notifications for real-time alerts
 
 ## Setup
 
-1. Open `index.html` for emergency blood search
-2. Open `dashboard.html` to register as a donor
-3. Allow location access when prompted (for emergency search)
-4. All data is stored locally in your browser (localStorage)
+### Quick Start
+1. Install dependencies: `npm install`
+2. Start the server: `npm start`
+3. Open http://localhost:3000 in your browser
+4. Allow location access when prompted (for emergency search)
+
+### Notification Setup (Optional but Recommended)
+To enable SMS, Email, and Push Notifications:
+
+1. Copy `.env.example` to `.env`
+2. Follow the detailed guide in `NOTIFICATION_SETUP.md`
+3. Configure:
+   - **Twilio** for SMS alerts (free $15 credit)
+   - **Gmail SMTP** for emails (completely free)
+   - **Firebase FCM** for push notifications (completely free)
+
+**Note:** The app works without notifications! They'll just be logged to console until configured.
+
+See `NOTIFICATION_SETUP.md` for step-by-step instructions.
 
 ## Usage
 
@@ -52,6 +75,9 @@ A web application for finding nearby blood donors and blood banks in emergency s
 - Browser Geolocation API
 - Node.js + Express (Backend)
 - SQLite Database (Data Storage)
+- **Twilio API** (SMS Notifications)
+- **Nodemailer** (Email Notifications)
+- **Firebase Cloud Messaging** (Push Notifications)
 
 ## Database Setup
 

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Bond - Emergency Blood Donor Finder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <span class="blood-drop">🩸</span>
+                <div>
+                    <h1>Blood Bond</h1>
+                    <p class="tagline">Emergency Blood Donor Network</p>
+                </div>
+            </div>
+            <nav class="header-nav">
+                <a href="dashboard.html" class="nav-link">
+                    <span>👤</span>
+                    <span>Donor Dashboard</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <h2 class="hero-title">Save Lives in Emergency Situations</h2>
+            <p class="hero-subtitle">Connect with nearby blood donors and blood banks instantly when every second counts</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Available</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Donors</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Blood Banks</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <main class="main-content">
+            <!-- Emergency Verification Section -->
+            <section id="verification-section" class="card">
+                <h2>🚨 Emergency Verification</h2>
+                <div class="alert-box">
+                    <span>Upload valid hospital report to access emergency services</span>
+                </div>
+                <form id="verification-form">
+                    <div class="form-group">
+                        <label for="hospital-report">Hospital Report (PDF/Image) *</label>
+                        <input type="file" id="hospital-report" accept=".pdf,.jpg,.jpeg,.png" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="patient-name">Patient Name *</label>
+                        <input type="text" id="patient-name" placeholder="Enter patient's full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="blood-type">Required Blood Type *</label>
+                        <select id="blood-type" required>
+                            <option value="">Select Blood Type</option>
+                            <option value="A+">A+ (A Positive)</option>
+                            <option value="A-">A- (A Negative)</option>
+                            <option value="B+">B+ (B Positive)</option>
+                            <option value="B-">B- (B Negative)</option>
+                            <option value="AB+">AB+ (AB Positive)</option>
+                            <option value="AB-">AB- (AB Negative)</option>
+                            <option value="O+">O+ (O Positive)</option>
+                            <option value="O-">O- (O Negative - Universal Donor)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="emergency-contact">Emergency Contact Number *</label>
+                        <input type="tel" id="emergency-contact" placeholder="+1 (234) 567-8900" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">🔍 Verify & Search Donors</button>
+                </form>
+            </section>
+
+            <!-- Search Results Section (Hidden Initially) -->
+            <section id="results-section" class="hidden">
+                <div class="card">
+                    <h2>📍 Your Location & Nearby Resources</h2>
+                    <p class="info-text">Interactive map showing your location, nearby donors, and blood banks</p>
+                    <div id="map"></div>
+                </div>
+
+                <div class="results-grid">
+                    <!-- Blood Donors Section -->
+                    <div class="card">
+                        <h2>🩸 Available Blood Donors</h2>
+                        <p class="info-text">Compatible donors sorted by distance</p>
+                        <div id="donors-list" class="list-container"></div>
+                    </div>
+
+                    <!-- Blood Banks Section -->
+                    <div class="card">
+                        <h2>🏥 Nearby Blood Banks</h2>
+                        <p class="info-text">Blood banks with current availability status</p>
+                        <div id="blood-banks-list" class="list-container"></div>
+                    </div>
+                </div>
+
+                <button id="new-search-btn" class="btn btn-secondary">🔄 Start New Search</button>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Save Life</h3>
+                <ul>
+                    <li><a href="#request">Request Blood</a></li>
+                    <li><a href="dashboard.html">Donate Blood</a></li>
+                    <li><a href="#find-bank">Find Blood Bank</a></li>
+                    <li><a href="#find-hospital">Find Hospital</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Register</h3>
+                <ul>
+                    <li><a href="dashboard.html">Donor Signup</a></li>
+                    <li><a href="dashboard.html">Blood Bank Sign Up</a></li>
+                    <li><a href="dashboard.html">Hospital Sign Up</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section footer-brand">
+                <h2>BLOOD BOND</h2>
+                <p>Blood Bond is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.</p>
+                <div class="social-links">
+                    <a href="https://www.facebook.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/RedCross" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.instagram.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/company/american-red-cross" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>⚠️ For life-threatening emergencies, call 108 immediately</p>
+            <p>&copy; 2024 Blood Bond. All rights reserved. Saving lives together.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
+    <script src="fcm-init.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

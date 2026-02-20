@@ -2,6 +2,8 @@ const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
+require('dotenv').config();
+const notificationService = require('./services/notificationService');
 
 const app = express();
 const PORT = 3000;
@@ -34,6 +36,7 @@ function initializeDatabase() {
         weight INTEGER NOT NULL,
         last_donation_date TEXT,
         registration_date TEXT NOT NULL,
+        fcm_token TEXT,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )`);
 
@@ -73,7 +76,7 @@ function initializeDatabase() {
 // API Routes
 
 // Register new donor
-app.post('/api/donors', (req, res) => {
+app.post('/api/donors', async (req, res) => {
     const { name, bloodType, phone, email, address, age, weight, lastDonationDate } = req.body;
     
     const sql = `INSERT INTO donors (name, blood_type, phone, email, address, age, weight, last_donation_date, registration_date)
@@ -81,11 +84,20 @@ app.post('/api/donors', (req, res) => {
     
     const registrationDate = new Date().toISOString();
     
-    db.run(sql, [name, bloodType, phone, email, address, age, weight, lastDonationDate, registrationDate], function(err) {
+    db.run(sql, [name, bloodType, phone, email, address, age, weight, lastDonationDate, registrationDate], async function(err) {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
-        res.json({ id: this.lastID, message: 'Donor registered successfully' });
+        
+        // Send registration confirmation
+        const donorInfo = { name, bloodType, phone, email };
+        const notificationResult = await notificationService.sendRegistrationConfirmation(donorInfo);
+        
+        res.json({ 
+            id: this.lastID, 
+            message: 'Donor registered successfully',
+            notifications: notificationResult
+        });
     });
 });
 
@@ -229,7 +241,71 @@ app.post('/api/blood-inventory', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Blood Agent server running on http://localhost:${PORT}`);
+    console.log(`Blood Bond server running on http://localhost:${PORT}`);
+});
+
+// New endpoint: Emergency blood request with notifications
+app.post('/api/emergency-request', async (req, res) => {
+    const { patientName, bloodType, emergencyContact, requesterEmail } = req.body;
+    
+    // Get compatible donors
+    const compatibilityMap = {
+        "O-": ["O-"],
+        "O+": ["O-", "O+"],
+        "A-": ["O-", "A-"],
+        "A+": ["O-", "O+", "A-", "A+"],
+        "B-": ["O-", "B-"],
+        "B+": ["O-", "O+", "B-", "B+"],
+        "AB-": ["O-", "A-", "B-", "AB-"],
+        "AB+": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"]
+    };
+    
+    const compatibleTypes = compatibilityMap[bloodType] || [];
+    const placeholders = compatibleTypes.map(() => '?').join(',');
+    
+    const sql = `SELECT * FROM donors 
+                 WHERE blood_type IN (${placeholders})
+                 AND (last_donation_date IS NULL OR 
+                      julianday('now') - julianday(last_donation_date) >= 30)`;
+    
+    db.all(sql, compatibleTypes, async (err, donors) => {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        
+        if (donors.length === 0) {
+            return res.json({ message: 'No compatible donors found', donors: [] });
+        }
+        
+        // Send notifications to all matched donors
+        const patientInfo = { patientName, bloodType, emergencyContact };
+        const notificationResults = await notificationService.notifyNearbyDonors(donors, patientInfo);
+        
+        // Send match notification to requester
+        if (requesterEmail) {
+            await notificationService.sendMatchNotification(requesterEmail, donors, patientInfo);
+        }
+        
+        res.json({ 
+            message: `Found ${donors.length} compatible donor(s)`,
+            donors: donors,
+            notifications: notificationResults
+        });
+    });
+});
+
+// Save FCM token for push notifications
+app.post('/api/donors/fcm-token', (req, res) => {
+    const { email, fcmToken } = req.body;
+    
+    const sql = `UPDATE donors SET fcm_token = ? WHERE email = ?`;
+    
+    db.run(sql, [fcmToken, email], function(err) {
+        if (err) {
+            return res.status(400).json({ error: err.message });
+        }
+        res.json({ message: 'FCM token saved successfully' });
+    });
 });
 
 // Graceful shutdown
