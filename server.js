@@ -7,7 +7,7 @@ const notificationService = require('./services/notificationService');
 const locationService = require('./services/locationService');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -242,7 +242,7 @@ app.post('/api/blood-inventory', (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Blood Bond server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
 
 // New endpoint: Emergency blood request with notifications
