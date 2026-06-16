@@ -1,7 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 const notificationService = require('./services/notificationService');
 const locationService = require('./services/locationService');
@@ -14,8 +13,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
+// Use persistent disk path on Render, fallback to local for development
+const DB_PATH = process.env.DB_PATH || './blood_donors.db';
+
 // Initialize SQLite database
-const db = new sqlite3.Database('./blood_donors.db', (err) => {
+const db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) {
         console.error('Error opening database:', err);
     } else {
@@ -240,12 +242,8 @@ app.post('/api/blood-inventory', (req, res) => {
     });
 });
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Start server — moved to bottom so all routes are registered first
 
-// New endpoint: Emergency blood request with notifications
 app.post('/api/emergency-request', async (req, res) => {
     const { patientName, bloodType, emergencyContact, requesterEmail, userLocation } = req.body;
     
@@ -384,4 +382,9 @@ process.on('SIGINT', () => {
         console.log('Database connection closed');
         process.exit(0);
     });
+});
+
+// Start server — all routes registered above
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
