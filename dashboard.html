@@ -9,272 +9,432 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <span class="blood-drop">🩸</span>
-                <h1>Blood Bond</h1>
+    <!-- Header with Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">🩸</div>
+                <h1 class="logo-text">Blood Bond</h1>
+                <span class="dashboard-subtitle">Donor Dashboard</span>
             </div>
-            <p class="tagline">Donor Dashboard</p>
-        </header>
+            <nav class="main-nav">
+                <div class="nav-item" onclick="window.location.href='index.html'">
+                    <i class="fas fa-search"></i>
+                    <span>Emergency Search</span>
+                </div>
+                <div class="nav-item active">
+                    <i class="fas fa-user"></i>
+                    <span>Donor Dashboard</span>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-        <nav class="nav-tabs">
-            <button class="tab-btn active" data-tab="register">Register as Donor</button>
-            <button class="tab-btn" data-tab="profile">My Profile</button>
-            <a href="index.html" class="btn-link">🚨 Emergency Search</a>
-        </nav>
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-container">
+        <!-- Dashboard Navigation Tabs -->
+        <div class="dashboard-nav">
+            <button class="tab-btn active" data-tab="register">
+                <i class="fas fa-user-plus"></i>
+                Register as Donor
+            </button>
+            <button class="tab-btn" data-tab="profile">
+                <i class="fas fa-user-circle"></i>
+                My Profile
+            </button>
+        </div>
 
-        <main>
-            <!-- Registration Tab -->
-            <section id="register-tab" class="tab-content active">
-                <div class="card">
-                    <h2>👤 Donor Registration</h2>
-                    <p class="info-text">Join our network of life-savers. Register to help save lives in emergencies.</p>
-                    
-                    <form id="donor-registration-form">
+        <!-- Register Tab Content -->
+        <div id="register-tab" class="tab-content active">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <h2><i class="fas fa-user-plus"></i> Donor Registration</h2>
+                        <p>Join our network of life-savers. Register to help save lives in emergencies.</p>
+                    </div>
+                </div>
+
+                <form id="donor-registration-form" class="registration-form">
+                    <!-- Personal Information Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Personal Information</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="donor-name">Full Name *</label>
-                                <input type="text" id="donor-name" required>
+                                <label for="donor-name">
+                                    <i class="fas fa-user"></i>
+                                    Full Name *
+                                </label>
+                                <input type="text" id="donor-name" placeholder="Enter your full name" required>
                             </div>
                             <div class="form-group">
-                                <label for="donor-blood-type">Blood Type *</label>
+                                <label for="donor-blood-type">
+                                    <i class="fas fa-tint"></i>
+                                    Blood Type *
+                                </label>
                                 <select id="donor-blood-type" required>
-                                    <option value="">Select</option>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+ (A Positive)</option>
+                                    <option value="A-">A- (A Negative)</option>
+                                    <option value="B+">B+ (B Positive)</option>
+                                    <option value="B-">B- (B Negative)</option>
+                                    <option value="AB+">AB+ (AB Positive)</option>
+                                    <option value="AB-">AB- (AB Negative)</option>
+                                    <option value="O+">O+ (O Positive)</option>
+                                    <option value="O-">O- (O Negative)</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="donor-phone">Phone Number *</label>
+                                <label for="donor-age">
+                                    <i class="fas fa-calendar"></i>
+                                    Age *
+                                </label>
+                                <input type="number" id="donor-age" min="18" max="65" placeholder="25" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="donor-weight">
+                                    <i class="fas fa-weight"></i>
+                                    Weight (kg) *
+                                </label>
+                                <input type="number" id="donor-weight" min="50" placeholder="70" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Information Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-address-book"></i> Contact Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="donor-phone">
+                                    <i class="fas fa-phone"></i>
+                                    Phone Number *
+                                </label>
                                 <input type="tel" id="donor-phone" placeholder="+1234567890" required>
                             </div>
                             <div class="form-group">
-                                <label for="donor-email">Email Address *</label>
-                                <input type="email" id="donor-email" required>
+                                <label for="donor-email">
+                                    <i class="fas fa-envelope"></i>
+                                    Email Address *
+                                </label>
+                                <input type="email" id="donor-email" placeholder="your.email@example.com" required>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="donor-address">Full Address *</label>
+                            <label for="donor-address">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Full Address *
+                            </label>
                             <input type="text" id="donor-address" placeholder="Street, City, State, ZIP" required>
                         </div>
+                    </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="donor-age">Age *</label>
-                                <input type="number" id="donor-age" min="18" max="65" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="donor-weight">Weight (kg) *</label>
-                                <input type="number" id="donor-weight" min="50" required>
-                            </div>
-                        </div>
-
+                    <!-- Medical Information Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-heartbeat"></i> Medical Information</h3>
                         <div class="form-group">
-                            <label for="last-donation-date">Last Donation Date</label>
+                            <label for="last-donation-date">
+                                <i class="fas fa-calendar-check"></i>
+                                Last Donation Date
+                            </label>
                             <input type="date" id="last-donation-date">
                             <small class="form-hint">Leave empty if you've never donated before</small>
                         </div>
 
                         <div class="form-group" id="last-donation-location-group" style="display: none;">
-                            <label for="last-donation-location">Last Donation Location</label>
+                            <label for="last-donation-location">
+                                <i class="fas fa-hospital"></i>
+                                Last Donation Location
+                            </label>
                             <input type="text" id="last-donation-location" placeholder="Hospital/Blood Bank Name">
                         </div>
+                    </div>
 
-                        <div class="form-group checkbox-group">
-                            <label>
+                    <!-- Consent Section -->
+                    <div class="form-section">
+                        <h3><i class="fas fa-shield-alt"></i> Consent & Confirmation</h3>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
                                 <input type="checkbox" id="medical-conditions" required>
+                                <span class="checkmark"></span>
                                 I confirm I have no medical conditions that prevent blood donation
                             </label>
                         </div>
 
-                        <div class="form-group checkbox-group">
-                            <label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
                                 <input type="checkbox" id="emergency-consent" required>
+                                <span class="checkmark"></span>
                                 I consent to be contacted in emergency situations
                             </label>
                         </div>
+                    </div>
 
-                        <button type="submit" class="btn btn-primary">Register as Donor</button>
-                    </form>
+                    <button type="submit" class="register-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Register as Donor
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Profile Tab Content -->
+        <div id="profile-tab" class="tab-content">
+            <!-- No Profile State -->
+            <div id="no-profile" class="dashboard-card">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <h2>No Profile Found</h2>
+                    <p>Please register as a donor first to view your profile.</p>
+                    <button class="btn-primary" onclick="switchTab('register')">
+                        <i class="fas fa-user-plus"></i>
+                        Register Now
+                    </button>
                 </div>
-            </section>
+            </div>
 
-            <!-- Profile Tab -->
-            <section id="profile-tab" class="tab-content">
-                <div id="no-profile" class="card">
-                    <h2>📋 My Profile</h2>
-                    <p class="info-text">No profile found. Please register first.</p>
-                </div>
-
-                <div id="profile-view" class="hidden">
-                    <div class="card profile-header">
+            <!-- Profile View -->
+            <div id="profile-view" class="hidden">
+                <!-- Profile Header Card -->
+                <div class="dashboard-card profile-header-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <span id="profile-initial">A</span>
+                        </div>
                         <div class="profile-info">
-                            <div class="profile-avatar">
-                                <span id="profile-initial">A</span>
-                            </div>
-                            <div>
-                                <h2 id="profile-name">John Doe</h2>
+                            <h2 id="profile-name">John Doe</h2>
+                            <div class="profile-badges">
                                 <span class="blood-type-badge" id="profile-blood-type">O+</span>
-                                <div id="eligibility-status" class="eligibility-badge"></div>
+                                <span class="eligibility-badge" id="eligibility-status">Eligible to Donate</span>
                             </div>
                         </div>
-                        <button id="edit-profile-btn" class="btn btn-secondary">Edit Profile</button>
+                        <button id="edit-profile-btn" class="btn-secondary">
+                            <i class="fas fa-edit"></i>
+                            Edit Profile
+                        </button>
                     </div>
+                </div>
 
-                    <div class="dashboard-grid">
-                        <div class="card">
-                            <h3>📞 Contact Information</h3>
-                            <div class="info-item">
-                                <span class="info-label">Phone:</span>
-                                <span id="profile-phone">+1234567890</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Email:</span>
-                                <span id="profile-email">john@example.com</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Address:</span>
-                                <span id="profile-address">123 Main St, City</span>
-                            </div>
+                <!-- Profile Information Grid -->
+                <div class="profile-grid">
+                    <!-- Contact Information -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-address-book"></i> Contact Information</h3>
                         </div>
-
-                        <div class="card">
-                            <h3>🩺 Medical Information</h3>
+                        <div class="info-list">
                             <div class="info-item">
-                                <span class="info-label">Age:</span>
-                                <span id="profile-age">30</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Weight:</span>
-                                <span id="profile-weight">70 kg</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Blood Type:</span>
-                                <span id="profile-blood-type-detail">O+</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <h3>📅 Donation History</h3>
-                        <div id="donation-history">
-                            <p class="info-text">No donation records yet.</p>
-                        </div>
-                        
-                        <!-- Inline Add Donation Form -->
-                        <div id="add-donation-section" style="margin-top: 20px; padding: 20px; background: var(--bg-light); border-radius: 10px;">
-                            <h4 style="color: var(--hospital-blue); margin-bottom: 15px;">Add New Donation</h4>
-                            <form id="add-donation-form">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label for="donation-date">Donation Date *</label>
-                                        <input type="date" id="donation-date" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="donation-units">Units Donated</label>
-                                        <input type="number" id="donation-units" value="1" min="1" max="2">
-                                    </div>
+                                <div class="info-label">
+                                    <i class="fas fa-phone"></i>
+                                    Phone
                                 </div>
-                                <div class="form-group">
-                                    <label for="donation-location">Donation Location *</label>
-                                    <input type="text" id="donation-location" placeholder="Hospital/Blood Bank Name" required>
+                                <div class="info-value" id="profile-phone">+1234567890</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-envelope"></i>
+                                    Email
                                 </div>
-                                <button type="submit" class="btn btn-primary">Save Donation</button>
-                            </form>
+                                <div class="info-value" id="profile-email">john@example.com</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Address
+                                </div>
+                                <div class="info-value" id="profile-address">123 Main St, City</div>
+                            </div>
                         </div>
-                        
-                        <div id="emergency-access-status" style="margin-top: 20px; padding: 15px; border-radius: 8px; text-align: center; font-weight: 600;"></div>
                     </div>
 
-                    <div class="card">
-                        <h3>📊 Donation Statistics</h3>
-                        <div class="stats-grid">
-                            <div class="stat-card">
+                    <!-- Medical Information -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-heartbeat"></i> Medical Information</h3>
+                        </div>
+                        <div class="info-list">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-calendar"></i>
+                                    Age
+                                </div>
+                                <div class="info-value" id="profile-age">30</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-weight"></i>
+                                    Weight
+                                </div>
+                                <div class="info-value" id="profile-weight">70 kg</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="fas fa-tint"></i>
+                                    Blood Type
+                                </div>
+                                <div class="info-value" id="profile-blood-type-detail">O+</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donation Statistics -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Donation Statistics</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="stat-content">
                                 <div class="stat-number" id="total-donations">0</div>
                                 <div class="stat-label">Total Donations</div>
                             </div>
-                            <div class="stat-card">
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="stat-content">
                                 <div class="stat-number" id="lives-saved">0</div>
                                 <div class="stat-label">Lives Potentially Saved</div>
                             </div>
-                            <div class="stat-card">
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="stat-content">
                                 <div class="stat-number" id="next-eligible">--</div>
                                 <div class="stat-label">Days Until Eligible</div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
 
-        <footer>
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Save Life</h3>
-                    <ul>
-                        <li><a href="index.html">Request Blood</a></li>
-                        <li><a href="#donate">Donate Blood</a></li>
-                        <li><a href="#find-bank">Find Blood Bank</a></li>
-                        <li><a href="#find-hospital">Find Hospital</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Register</h3>
-                    <ul>
-                        <li><a href="#register">Donor Signup</a></li>
-                        <li><a href="#bank">Blood Bank Sign Up</a></li>
-                        <li><a href="#hospital">Hospital Sign Up</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>Company</h3>
-                    <ul>
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#contact">Contact Us</a></li>
-                        <li><a href="#privacy">Privacy Policy</a></li>
-                        <li><a href="#terms">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section footer-brand">
-                    <h2>BLOOD BOND</h2>
-                    <p>Blood Bond is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.</p>
-                    <div class="social-links">
-                        <a href="https://www.facebook.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="https://twitter.com/RedCross" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="https://www.instagram.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="https://www.linkedin.com/company/american-red-cross" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
+                <!-- Donation History -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-history"></i> Donation History</h3>
+                        <button class="btn-primary" id="add-donation-btn">
+                            <i class="fas fa-plus"></i>
+                            Add Donation
+                        </button>
+                    </div>
+                    <div id="donation-history">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-calendar-times"></i>
+                            </div>
+                            <p>No donation records yet.</p>
+                        </div>
+                    </div>
+
+                    <!-- Add Donation Form (Hidden Initially) -->
+                    <div id="add-donation-form" class="add-donation-form hidden">
+                        <h4><i class="fas fa-plus-circle"></i> Add New Donation</h4>
+                        <form id="donation-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="donation-date">
+                                        <i class="fas fa-calendar"></i>
+                                        Donation Date *
+                                    </label>
+                                    <input type="date" id="donation-date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="donation-units">
+                                        <i class="fas fa-tint"></i>
+                                        Units Donated
+                                    </label>
+                                    <input type="number" id="donation-units" value="1" min="1" max="2">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="donation-location">
+                                    <i class="fas fa-hospital"></i>
+                                    Donation Location *
+                                </label>
+                                <input type="text" id="donation-location" placeholder="Hospital/Blood Bank Name" required>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Save Donation
+                                </button>
+                                <button type="button" class="btn-secondary" id="cancel-donation-btn">
+                                    <i class="fas fa-times"></i>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Emergency Access Status -->
+                    <div id="emergency-access-status" class="status-alert">
+                        <div class="status-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="status-content">
+                            <h4>Your profile is ACTIVE in emergency search system</h4>
+                            <p>You can be contacted for emergency blood donations</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>⚠️ For life-threatening emergencies, call 911 immediately</p>
-                <p>&copy; 2024 Blood Bond. All rights reserved. Saving lives together.</p>
-            </div>
-        </footer>
+        </div>
     </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Save Life</h3>
+                <ul>
+                    <li><a href="index.html">Request Blood</a></li>
+                    <li><a href="#donate">Donate Blood</a></li>
+                    <li><a href="#find-bank">Find Blood Bank</a></li>
+                    <li><a href="#find-hospital">Find Hospital</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Register</h3>
+                <ul>
+                    <li><a href="#register">Donor Signup</a></li>
+                    <li><a href="#bank">Blood Bank Sign Up</a></li>
+                    <li><a href="#hospital">Hospital Sign Up</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div class="footer-section footer-brand">
+                <h2>BLOOD BOND</h2>
+                <p>Blood Bond is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>⚠️ For life-threatening emergencies, call 108 immediately</p>
+            <p>&copy; 2024 Blood Bond. All rights reserved. Saving lives together.</p>
+        </div>
+    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
     <script src="fcm-init.js"></script>
+    <script src="map-service.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>

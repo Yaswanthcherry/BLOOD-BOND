@@ -5,115 +5,271 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blood Bond - Emergency Blood Donor Finder</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <!-- Mapbox GL JS (FREE Alternative) -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <div class="logo">
-                <span class="blood-drop">🩸</span>
-                <div>
-                    <h1>Blood Bond</h1>
-                    <p class="tagline">Emergency Blood Donor Network</p>
-                </div>
+    <!-- Header with Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">🩸</div>
+                <h1 class="logo-text">Blood Bond</h1>
             </div>
-            <nav class="header-nav">
-                <a href="dashboard.html" class="nav-link">
-                    <span>👤</span>
+            <nav class="main-nav">
+                <div class="nav-item active">
+                    <i class="fas fa-search"></i>
+                    <span>Emergency Search</span>
+                </div>
+                <div class="nav-item" onclick="window.location.href='dashboard.html'">
+                    <i class="fas fa-user"></i>
                     <span>Donor Dashboard</span>
-                </a>
+                </div>
             </nav>
         </div>
     </header>
 
+    <!-- Hero Section -->
     <section class="hero-section">
-        <div class="hero-content">
-            <h2 class="hero-title">Save Lives in Emergency Situations</h2>
-            <p class="hero-subtitle">Connect with nearby blood donors and blood banks instantly when every second counts</p>
+        <div class="hero-container">
+            <div class="hero-icon">
+                <div class="emergency-light">🚨</div>
+            </div>
+            <h1 class="hero-title">Emergency Blood Request</h1>
+            <p class="hero-subtitle">Fast-track blood donor search for critical situations</p>
+            
             <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number">24/7</span>
-                    <span class="stat-label">Available</span>
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">AVAILABLE</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">1000+</span>
-                    <span class="stat-label">Donors</span>
+                <div class="stat-card">
+                    <div class="stat-number">&lt;5min</div>
+                    <div class="stat-label">RESPONSE TIME</div>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">50+</span>
-                    <span class="stat-label">Blood Banks</span>
+                <div class="stat-card">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">ACTIVE DONORS</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <div class="container">
-        <main class="main-content">
-            <!-- Emergency Verification Section -->
-            <section id="verification-section" class="card">
-                <h2>🚨 Emergency Verification</h2>
-                <div class="alert-box">
-                    <span>Upload valid hospital report to access emergency services</span>
-                </div>
-                <form id="verification-form">
-                    <div class="form-group">
-                        <label for="hospital-report">Hospital Report (PDF/Image) *</label>
-                        <input type="file" id="hospital-report" accept=".pdf,.jpg,.jpeg,.png" required>
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Required Documents -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fas fa-file-medical"></i>
+                        <h3>Required Documents</h3>
                     </div>
-                    <div class="form-group">
-                        <label for="patient-name">Patient Name *</label>
-                        <input type="text" id="patient-name" placeholder="Enter patient's full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="blood-type">Required Blood Type *</label>
-                        <select id="blood-type" required>
-                            <option value="">Select Blood Type</option>
-                            <option value="A+">A+ (A Positive)</option>
-                            <option value="A-">A- (A Negative)</option>
-                            <option value="B+">B+ (B Positive)</option>
-                            <option value="B-">B- (B Negative)</option>
-                            <option value="AB+">AB+ (AB Positive)</option>
-                            <option value="AB-">AB- (AB Negative)</option>
-                            <option value="O+">O+ (O Positive)</option>
-                            <option value="O-">O- (O Negative - Universal Donor)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="emergency-contact">Emergency Contact Number *</label>
-                        <input type="tel" id="emergency-contact" placeholder="+1 (234) 567-8900" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary">🔍 Verify & Search Donors</button>
-                </form>
-            </section>
-
-            <!-- Search Results Section (Hidden Initially) -->
-            <section id="results-section" class="hidden">
-                <div class="card">
-                    <h2>📍 Your Location & Nearby Resources</h2>
-                    <p class="info-text">Interactive map showing your location, nearby donors, and blood banks</p>
-                    <div id="map"></div>
-                </div>
-
-                <div class="results-grid">
-                    <!-- Blood Donors Section -->
-                    <div class="card">
-                        <h2>🩸 Available Blood Donors</h2>
-                        <p class="info-text">Compatible donors sorted by distance</p>
-                        <div id="donors-list" class="list-container"></div>
-                    </div>
-
-                    <!-- Blood Banks Section -->
-                    <div class="card">
-                        <h2>🏥 Nearby Blood Banks</h2>
-                        <p class="info-text">Blood banks with current availability status</p>
-                        <div id="blood-banks-list" class="list-container"></div>
+                    <div class="requirements-list">
+                        <div class="requirement-item completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Valid hospital report or prescription</span>
+                        </div>
+                        <div class="requirement-item completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Patient identification details</span>
+                        </div>
+                        <div class="requirement-item completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Emergency contact information</span>
+                        </div>
+                        <div class="requirement-item completed">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Location access permission</span>
+                        </div>
                     </div>
                 </div>
 
-                <button id="new-search-btn" class="btn btn-secondary">🔄 Start New Search</button>
-            </section>
-        </main>
+                <!-- How It Works -->
+                <div class="sidebar-card">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle"></i>
+                        <h3>How It Works</h3>
+                    </div>
+                    <div class="steps-list">
+                        <div class="step-item">
+                            <div class="step-number">1</div>
+                            <span>Upload hospital report</span>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">2</div>
+                            <span>Enter patient details</span>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">3</div>
+                            <span>Get instant donor matches</span>
+                        </div>
+                        <div class="step-item">
+                            <div class="step-number">4</div>
+                            <span>Contact donors directly</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Alert -->
+                <div class="sidebar-card emergency-card">
+                    <div class="emergency-icon">⚠️</div>
+                    <h3>Life-threatening emergency?</h3>
+                    <p>Call emergency services immediately</p>
+                    <button class="emergency-btn" onclick="window.open('tel:108', '_self')">
+                        <i class="fas fa-phone"></i>
+                        Call 108
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Form Area -->
+            <main class="form-section">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Emergency Verification</h2>
+                        <p>Please provide the following information to proceed with the blood request</p>
+                    </div>
+
+                    <form id="emergency-form" class="emergency-form">
+                        <!-- Hospital Report Upload -->
+                        <div class="form-group">
+                            <label for="hospital-report">
+                                <i class="fas fa-file-medical"></i>
+                                Hospital Report / Medical Prescription *
+                            </label>
+                            <div class="file-upload-area" id="file-upload-area">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">
+                                    <p>Click to upload or drag and drop</p>
+                                    <small>PDF, JPG, PNG (Max 5MB)</small>
+                                </div>
+                            </div>
+                            <input type="file" id="hospital-report" accept=".pdf,.jpg,.jpeg,.png" required>
+                        </div>
+
+                        <div class="form-row">
+                            <!-- Patient Name -->
+                            <div class="form-group">
+                                <label for="patient-name">
+                                    <i class="fas fa-user"></i>
+                                    Patient Full Name *
+                                </label>
+                                <input type="text" id="patient-name" placeholder="Enter patient's full name" required>
+                            </div>
+
+                            <!-- Blood Type -->
+                            <div class="form-group">
+                                <label for="blood-type">
+                                    <i class="fas fa-tint"></i>
+                                    Required Blood Type *
+                                </label>
+                                <select id="blood-type" required>
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+ (A Positive)</option>
+                                    <option value="A-">A- (A Negative)</option>
+                                    <option value="B+">B+ (B Positive)</option>
+                                    <option value="B-">B- (B Negative)</option>
+                                    <option value="AB+">AB+ (AB Positive)</option>
+                                    <option value="AB-">AB- (AB Negative)</option>
+                                    <option value="O+">O+ (O Positive)</option>
+                                    <option value="O-">O- (O Negative)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Contact -->
+                        <div class="form-group">
+                            <label for="emergency-contact">
+                                <i class="fas fa-phone"></i>
+                                Emergency Contact Number *
+                            </label>
+                            <input type="tel" id="emergency-contact" placeholder="+1 (234) 567-8900" required>
+                            <small class="form-hint">We'll use this number to coordinate with donors</small>
+                        </div>
+
+                        <!-- Requester Email -->
+                        <div class="form-group">
+                            <label for="requester-email">
+                                <i class="fas fa-envelope"></i>
+                                Your Email Address *
+                            </label>
+                            <input type="email" id="requester-email" placeholder="your.email@example.com" required>
+                            <small class="form-hint">For receiving donor match notifications</small>
+                        </div>
+
+                        <!-- Hospital/Location Address with Autocomplete -->
+                        <div class="form-group">
+                            <label for="hospital-address">
+                                <i class="fas fa-hospital"></i>
+                                Hospital/Location Address *
+                            </label>
+                            <input type="text" id="hospital-address" placeholder="Start typing hospital or address..." required>
+                            <small class="form-hint">We'll use this to find nearby donors</small>
+                        </div>
+
+                        <!-- Confirmation Checkbox -->
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="emergency-confirmation" required>
+                                <span class="checkmark"></span>
+                                I confirm that this is a genuine medical emergency and all information provided is accurate
+                            </label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-search"></i>
+                            Search for Donors Now
+                        </button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Results Section (Hidden Initially) -->
+    <div id="results-section" class="results-section hidden">
+        <div class="results-container">
+            <div class="results-header">
+                <h2>📍 Nearby Donors & Blood Banks</h2>
+                <p>Found compatible resources in your area</p>
+            </div>
+
+            <div class="map-container">
+                <div id="map"></div>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3>🩸 Available Donors</h3>
+                        <span class="donor-count" id="donor-count">0 found</span>
+                    </div>
+                    <div id="donors-list" class="list-container"></div>
+                </div>
+
+                <div class="result-card">
+                    <div class="card-header">
+                        <h3>🏥 Blood Banks</h3>
+                        <span class="bank-count" id="bank-count">0 found</span>
+                    </div>
+                    <div id="blood-banks-list" class="list-container"></div>
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button id="new-search-btn" class="btn-secondary">
+                    <i class="fas fa-redo"></i>
+                    Start New Search
+                </button>
+            </div>
+        </div>
     </div>
 
     <footer>
@@ -147,20 +303,6 @@
             <div class="footer-section footer-brand">
                 <h2>BLOOD BOND</h2>
                 <p>Blood Bond is a platform that helps to streamline blood donation and blood request which puts the power to save a life in the palm of your hand.</p>
-                <div class="social-links">
-                    <a href="https://www.facebook.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://twitter.com/RedCross" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="https://www.instagram.com/americanredcross" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://www.linkedin.com/company/american-red-cross" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </div>
             </div>
         </div>
         <div class="footer-bottom">
@@ -169,10 +311,10 @@
         </div>
     </footer>
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js"></script>
     <script src="fcm-init.js"></script>
+    <script src="map-service.js"></script>
     <script src="app.js"></script>
 </body>
 </html>

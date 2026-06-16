@@ -4,6 +4,7 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 const notificationService = require('./services/notificationService');
+const locationService = require('./services/locationService');
 
 const app = express();
 const PORT = 3000;
@@ -246,7 +247,7 @@ app.listen(PORT, () => {
 
 // New endpoint: Emergency blood request with notifications
 app.post('/api/emergency-request', async (req, res) => {
-    const { patientName, bloodType, emergencyContact, requesterEmail } = req.body;
+    const { patientName, bloodType, emergencyContact, requesterEmail, userLocation } = req.body;
     
     // Get compatible donors
     const compatibilityMap = {
@@ -277,18 +278,24 @@ app.post('/api/emergency-request', async (req, res) => {
             return res.json({ message: 'No compatible donors found', donors: [] });
         }
         
+        // Calculate distances if user location provided
+        let donorsWithDistance = donors;
+        if (userLocation) {
+            donorsWithDistance = await locationService.calculateDonorDistances(userLocation, donors);
+        }
+        
         // Send notifications to all matched donors
         const patientInfo = { patientName, bloodType, emergencyContact };
-        const notificationResults = await notificationService.notifyNearbyDonors(donors, patientInfo);
+        const notificationResults = await notificationService.notifyNearbyDonors(donorsWithDistance, patientInfo);
         
         // Send match notification to requester
         if (requesterEmail) {
-            await notificationService.sendMatchNotification(requesterEmail, donors, patientInfo);
+            await notificationService.sendMatchNotification(requesterEmail, donorsWithDistance, patientInfo);
         }
         
         res.json({ 
-            message: `Found ${donors.length} compatible donor(s)`,
-            donors: donors,
+            message: `Found ${donorsWithDistance.length} compatible donor(s)`,
+            donors: donorsWithDistance,
             notifications: notificationResults
         });
     });
@@ -306,6 +313,66 @@ app.post('/api/donors/fcm-token', (req, res) => {
         }
         res.json({ message: 'FCM token saved successfully' });
     });
+});
+
+// Location API endpoints
+
+// Search addresses with autocomplete (Nominatim - FREE)
+app.get('/api/location/search-addresses', async (req, res) => {
+    const { q, limit } = req.query;
+    
+    try {
+        const suggestions = await locationService.searchAddresses(q, limit || 5);
+        res.json({ suggestions });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Search nearby hospitals/blood banks
+app.post('/api/location/nearby-places', async (req, res) => {
+    const { location, type, radius } = req.body;
+    
+    try {
+        const places = await locationService.searchNearbyPlaces(location, type, radius);
+        res.json({ places });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Calculate route between two points
+app.post('/api/location/calculate-route', async (req, res) => {
+    const { origin, destination } = req.body;
+    
+    try {
+        const route = await locationService.calculateDrivingRoute(origin, destination);
+        res.json({ route });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Geocode address
+app.post('/api/location/geocode', async (req, res) => {
+    const { address } = req.body;
+    
+    try {
+        const location = await locationService.geocodeAddress(address);
+        res.json({ location });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get place details
+app.get('/api/location/place-details/:placeId', async (req, res) => {
+    try {
+        const details = await locationService.getPlaceDetails(req.params.placeId);
+        res.json({ details });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Graceful shutdown
