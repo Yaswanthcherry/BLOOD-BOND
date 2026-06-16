@@ -1,17 +1,16 @@
-// Enhanced Map Service with Mapbox GL JS (FREE Alternative to Google Maps)
+// Map Service using Leaflet + OpenStreetMap (100% FREE, no token needed)
 class MapService {
     constructor() {
         this.map = null;
         this.markers = [];
-        this.userMarker = null;
     }
 
     /**
-     * Initialize Mapbox GL map (FREE: 50,000 loads/month)
+     * Initialize Leaflet map with OpenStreetMap tiles — no API key required
      */
     async initializeMap(containerId, center, zoom = 13) {
-        if (!window.mapboxgl) {
-            console.error('Mapbox GL JS not loaded');
+        if (!window.L) {
+            console.error('Leaflet not loaded');
             return false;
         }
 
@@ -21,58 +20,43 @@ class MapService {
             return false;
         }
 
-        // Get Mapbox token from meta tag or use public token
-        const mapboxToken = document.querySelector('meta[name="mapbox-token"]')?.content || 
-                           'pk.eyJ1IjoiYmxvb2Rib25kIiwiYSI6ImNtNXh5ejB4YjBhZGsyanM4Ym5xdGJ5ZGwifQ.example';
+        // Destroy existing map instance to avoid double-init errors
+        if (this.map) {
+            this.map.remove();
+            this.map = null;
+        }
 
-        mapboxgl.accessToken = mapboxToken;
+        // Create Leaflet map
+        this.map = L.map(containerId).setView([center.lat, center.lng], zoom);
 
-        // Initialize map
-        this.map = new mapboxgl.Map({
-            container: containerId,
-            style: 'mapbox://styles/mapbox/streets-v12', // Free style
-            center: [center.lng, center.lat],
-            zoom: zoom
-        });
-
-        // Add navigation controls
-        this.map.addControl(new mapboxgl.NavigationControl());
-
-        // Add fullscreen control
-        this.map.addControl(new mapboxgl.FullscreenControl());
+        // OpenStreetMap tiles — completely free, no token required
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(this.map);
 
         return true;
     }
 
     /**
-     * Add marker to map
+     * Add a circle marker (fallback / generic)
      */
     addMarker(position, title, color = '#dc2626', infoContent = null) {
         if (!this.map) return null;
 
-        // Create custom marker element
-        const el = document.createElement('div');
-        el.className = 'custom-marker';
-        el.style.cssText = `
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: ${color};
-            border: 3px solid white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            cursor: pointer;
-        `;
+        const marker = L.circleMarker([position.lat, position.lng], {
+            radius: 10,
+            fillColor: color,
+            color: '#ffffff',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.9
+        }).addTo(this.map);
 
-        // Create marker
-        const marker = new mapboxgl.Marker(el)
-            .setLngLat([position.lng, position.lat])
-            .addTo(this.map);
-
-        // Add popup if content provided
         if (infoContent) {
-            const popup = new mapboxgl.Popup({ offset: 25 })
-                .setHTML(infoContent);
-            marker.setPopup(popup);
+            marker.bindPopup(infoContent);
+        } else if (title) {
+            marker.bindTooltip(title);
         }
 
         this.markers.push(marker);
@@ -80,40 +64,26 @@ class MapService {
     }
 
     /**
-     * Add custom marker with icon
+     * Add an emoji marker (user 📍 / donor 🩸 / hospital 🏥)
      */
     addCustomMarker(position, title, iconType = 'donor', infoContent = null) {
         if (!this.map) return null;
 
-        const colors = {
-            user: '#3b82f6',
-            donor: '#dc2626',
-            hospital: '#10b981'
-        };
+        const icons = { user: '📍', donor: '🩸', hospital: '🏥' };
+        const emoji = icons[iconType] || icons.donor;
 
-        const icons = {
-            user: '📍',
-            donor: '🩸',
-            hospital: '🏥'
-        };
+        const icon = L.divIcon({
+            html: `<span style="font-size:28px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.4))">${emoji}</span>`,
+            className: '',
+            iconSize: [30, 30],
+            iconAnchor: [15, 28],
+            popupAnchor: [0, -28]
+        });
 
-        const el = document.createElement('div');
-        el.className = 'custom-marker';
-        el.innerHTML = icons[iconType] || icons.donor;
-        el.style.cssText = `
-            font-size: 24px;
-            cursor: pointer;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-        `;
-
-        const marker = new mapboxgl.Marker(el)
-            .setLngLat([position.lng, position.lat])
-            .addTo(this.map);
+        const marker = L.marker([position.lat, position.lng], { icon, title }).addTo(this.map);
 
         if (infoContent) {
-            const popup = new mapboxgl.Popup({ offset: 25 })
-                .setHTML(infoContent);
-            marker.setPopup(popup);
+            marker.bindPopup(infoContent);
         }
 
         this.markers.push(marker);
@@ -121,75 +91,63 @@ class MapService {
     }
 
     /**
-     * Clear all markers
+     * Remove all markers from the map
      */
     clearMarkers() {
-        this.markers.forEach(marker => marker.remove());
+        this.markers.forEach(marker => {
+            if (this.map) this.map.removeLayer(marker);
+        });
         this.markers = [];
     }
 
     /**
-     * Fit map to show all markers
+     * Fit the map view to show all provided lat/lng locations
      */
     fitBounds(locations) {
         if (!this.map || locations.length === 0) return;
 
-        const bounds = new mapboxgl.LngLatBounds();
-        locations.forEach(location => {
-            bounds.extend([location.lng, location.lat]);
-        });
+        const latLngs = locations
+            .filter(l => l && l.lat && l.lng)
+            .map(l => [l.lat, l.lng]);
 
-        this.map.fitBounds(bounds, {
-            padding: 50,
-            maxZoom: 15
-        });
+        if (latLngs.length > 0) {
+            this.map.fitBounds(L.latLngBounds(latLngs), { padding: [50, 50], maxZoom: 15 });
+        }
     }
 
     /**
-     * Calculate route and display (using OpenRouteService)
+     * Return an OpenStreetMap directions URL (opens in new tab)
      */
-    async calculateRoute(origin, destination) {
-        // This will be handled by backend API
-        // Just open directions in external map
-        const url = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=${origin.lat},${origin.lng};${destination.lat},${destination.lng}`;
-        return {
-            url: url,
-            distance: 'Calculating...',
-            duration: 'Calculating...'
-        };
+    calculateRoute(origin, destination) {
+        const url = `https://www.openstreetmap.org/directions?engine=fossgis_osrm_car` +
+                    `&route=${origin.lat},${origin.lng};${destination.lat},${destination.lng}`;
+        return { url };
     }
 
-    /**
-     * Get marker icon colors
-     */
     getMarkerColor(type) {
-        const colors = {
-            user: '#3b82f6',
-            donor: '#dc2626',
-            hospital: '#10b981'
-        };
+        const colors = { user: '#3b82f6', donor: '#dc2626', hospital: '#10b981' };
         return colors[type] || colors.donor;
     }
 }
 
-// Address autocomplete using Nominatim (FREE)
+// ---------------------------------------------------------------------------
+// Address Autocomplete powered by Nominatim (OpenStreetMap) — FREE, no key
+// ---------------------------------------------------------------------------
 class AddressAutocomplete {
     constructor(inputId, onSelect) {
         this.input = document.getElementById(inputId);
         this.onSelect = onSelect;
         this.suggestions = [];
         this.selectedIndex = -1;
-        
-        if (this.input) {
-            this.init();
-        }
+
+        if (this.input) this.init();
     }
 
     init() {
-        // Create suggestions container
-        this.suggestionsContainer = document.createElement('div');
-        this.suggestionsContainer.className = 'address-suggestions';
-        this.suggestionsContainer.style.cssText = `
+        // Dropdown container
+        this.dropdown = document.createElement('div');
+        this.dropdown.className = 'address-suggestions';
+        this.dropdown.style.cssText = `
             position: absolute;
             top: 100%;
             left: 0;
@@ -205,132 +163,103 @@ class AddressAutocomplete {
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         `;
 
-        // Make input container relative
         this.input.parentElement.style.position = 'relative';
-        this.input.parentElement.appendChild(this.suggestionsContainer);
+        this.input.parentElement.appendChild(this.dropdown);
 
-        // Add event listeners
-        let debounceTimer;
+        let timer;
         this.input.addEventListener('input', (e) => {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => this.search(e.target.value), 300);
+            clearTimeout(timer);
+            timer = setTimeout(() => this.search(e.target.value), 300);
         });
 
         this.input.addEventListener('keydown', (e) => this.handleKeyboard(e));
+
         document.addEventListener('click', (e) => {
-            if (!this.input.contains(e.target) && !this.suggestionsContainer.contains(e.target)) {
-                this.hideSuggestions();
+            if (!this.input.contains(e.target) && !this.dropdown.contains(e.target)) {
+                this.hide();
             }
         });
     }
 
     async search(query) {
-        if (query.length < 3) {
-            this.hideSuggestions();
-            return;
-        }
+        if (query.length < 3) { this.hide(); return; }
 
         try {
-            const response = await fetch(`/api/location/search-addresses?q=${encodeURIComponent(query)}`);
-            const data = await response.json();
-            
+            const res = await fetch(`/api/location/search-addresses?q=${encodeURIComponent(query)}`);
+            const data = await res.json();
             this.suggestions = data.suggestions || [];
-            this.displaySuggestions();
-        } catch (error) {
-            console.error('Error searching addresses:', error);
+            this.render();
+        } catch (err) {
+            console.error('Autocomplete error:', err);
         }
     }
 
-    displaySuggestions() {
-        if (this.suggestions.length === 0) {
-            this.hideSuggestions();
-            return;
-        }
+    render() {
+        if (this.suggestions.length === 0) { this.hide(); return; }
 
-        this.suggestionsContainer.innerHTML = this.suggestions.map((suggestion, index) => `
-            <div class="suggestion-item" data-index="${index}" style="
+        this.dropdown.innerHTML = this.suggestions.map((s, i) => `
+            <div class="suggestion-item" data-index="${i}" style="
                 padding: 12px 16px;
                 cursor: pointer;
                 border-bottom: 1px solid #f3f4f6;
-                transition: background 0.2s;
-            " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-                <div style="font-weight: 500; color: #1f2937;">${suggestion.label.split(',')[0]}</div>
-                <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">${suggestion.label}</div>
+            " onmouseover="this.style.background='#f9fafb'"
+               onmouseout="this.style.background='white'">
+                <div style="font-weight:500;color:#1f2937">${s.label.split(',')[0]}</div>
+                <div style="font-size:12px;color:#6b7280;margin-top:2px">${s.label}</div>
             </div>
         `).join('');
 
-        this.suggestionsContainer.style.display = 'block';
+        this.dropdown.style.display = 'block';
 
-        // Add click handlers
-        this.suggestionsContainer.querySelectorAll('.suggestion-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const index = parseInt(item.dataset.index);
-                this.selectSuggestion(index);
-            });
+        this.dropdown.querySelectorAll('.suggestion-item').forEach(item => {
+            item.addEventListener('click', () => this.select(parseInt(item.dataset.index)));
         });
     }
 
-    hideSuggestions() {
-        this.suggestionsContainer.style.display = 'none';
+    hide() {
+        this.dropdown.style.display = 'none';
         this.selectedIndex = -1;
     }
 
-    selectSuggestion(index) {
-        const suggestion = this.suggestions[index];
-        if (suggestion) {
-            this.input.value = suggestion.label;
-            this.hideSuggestions();
-            
-            if (this.onSelect) {
-                this.onSelect({
-                    formatted_address: suggestion.label,
-                    geometry: {
-                        location: {
-                            lat: () => suggestion.lat,
-                            lng: () => suggestion.lng
-                        }
-                    }
-                });
-            }
+    select(index) {
+        const s = this.suggestions[index];
+        if (!s) return;
+        this.input.value = s.label;
+        this.hide();
+        if (this.onSelect) {
+            this.onSelect({
+                formatted_address: s.label,
+                geometry: { location: { lat: () => s.lat, lng: () => s.lng } }
+            });
         }
     }
 
     handleKeyboard(e) {
-        const items = this.suggestionsContainer.querySelectorAll('.suggestion-item');
-        
+        const items = this.dropdown.querySelectorAll('.suggestion-item');
         if (e.key === 'ArrowDown') {
             e.preventDefault();
             this.selectedIndex = Math.min(this.selectedIndex + 1, items.length - 1);
-            this.highlightItem(items);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
             this.selectedIndex = Math.max(this.selectedIndex - 1, 0);
-            this.highlightItem(items);
         } else if (e.key === 'Enter' && this.selectedIndex >= 0) {
             e.preventDefault();
-            this.selectSuggestion(this.selectedIndex);
+            this.select(this.selectedIndex);
+            return;
         } else if (e.key === 'Escape') {
-            this.hideSuggestions();
+            this.hide();
+            return;
         }
-    }
-
-    highlightItem(items) {
-        items.forEach((item, index) => {
-            if (index === this.selectedIndex) {
-                item.style.background = '#f3f4f6';
-            } else {
-                item.style.background = 'white';
-            }
+        items.forEach((item, i) => {
+            item.style.background = i === this.selectedIndex ? '#f3f4f6' : 'white';
         });
     }
 }
 
-// Initialize function for address autocomplete
 function initializeAddressAutocomplete(inputId, onPlaceSelected) {
     return new AddressAutocomplete(inputId, onPlaceSelected);
 }
 
-// Export for use in other scripts
 window.MapService = MapService;
 window.AddressAutocomplete = AddressAutocomplete;
 window.initializeAddressAutocomplete = initializeAddressAutocomplete;

@@ -402,7 +402,7 @@ function initializeMap() {
     const mapContainer = document.getElementById('map');
     if (!mapContainer) return;
 
-    // Initialize Mapbox map (FREE)
+    // Initialize Leaflet + OpenStreetMap (FREE, no token needed)
     if (!mapService) {
         mapService = new MapService();
     }
